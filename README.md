@@ -1,4 +1,4 @@
-# League of Legends Vision Score Analysis
+# League of Legends Vision Score Analysisdrsgdsfgdfgdfg
 
 This repository contains the implementation and analysis of a project conducted at UC San Diego. The focus of this project is to investigate the relationship between vision score statistics and team success in League of Legends matches.
 
@@ -32,17 +32,3 @@ The project follows the Data Science Lifecycle, breaking the analysis into multi
      - Null Hypothesis: The average vision score does not differ between winning and losing teams.  
      - Alternative Hypothesis: The average vision score differs between winning and losing teams.  
    - **Results**: Conducted permutation tests and calculated a p-value of X, leading to a conclusion regarding the relationship between vision score and match success.
-
-## Repository Structure
-
-- `data/`: Contains the dataset used for analysis.
-- `notebooks/`: Jupyter notebooks documenting the data cleaning, EDA, missingness assessment, and hypothesis testing.
-- `plots/`: Visualizations created during the analysis.
-- `results/`: Outputs from the hypothesis tests and final findings.
-
-## Getting Started
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-repo-url.git
-   cd your-repo-folder
