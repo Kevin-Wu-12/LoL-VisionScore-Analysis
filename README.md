@@ -1,4 +1,6 @@
-# League of Legends Vision Score Analysisdrsgdsfgdfgdfg
+<h1 class="custom-title">League of Legends Vision Score Analysis</h1>
+
+
 
 This repository contains the implementation and analysis of a project conducted at UC San Diego. The focus of this project is to investigate the relationship between vision score statistics and team success in League of Legends matches.
 
