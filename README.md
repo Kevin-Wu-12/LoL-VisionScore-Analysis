@@ -7,9 +7,14 @@ This repository contains the implementation and analysis of a project conducted 
 ## Project Overview
 
 The project follows the Data Science Lifecycle, breaking the analysis into multiple stages:
-
+<iframe
+  src="assets/file-name.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
 1. **Introduction and Question Identification**  
-   - **Dataset**: A dataset containing detailed match statistics for League of Legends games.
+   - **Dataset**: A dataset containing detailed match statistics for League of Lsegends games.
    - **Research Question**: How does the vision score of players or teams correlate with match outcomes?  
    - **Relevance**: Vision score is a critical yet often underappreciated component of gameplay. Understanding its impact on success can offer insights into strategies for competitive play.
    - **Dataset Details**: The dataset contains X rows and Y columns, with relevant columns including:
