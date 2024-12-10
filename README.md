@@ -1,41 +1,9 @@
-<h1 class="custom-title">League of Legends Vision Score Analysis</h1>
+<h1 class="custom-title">An Overlooked Metric: How Vision Score Impacts Winning in League of Legends</h1>
 
+A UCSD DSC80 project focused on analyzing the impact of vision score in League of Legends
 
+## Introduction
 
-This repository contains the implementation and analysis of a project conducted at UC San Diego. The focus of this project is to investigate the relationship between vision score statistics and team success in League of Legends matches.
+Welcome to the world of Vision Score! League of Legends (LOL) is a massively popular online multiply multiplayer online battle game (MOBA) with millions of players across the globe. With so many players actively playing the game League of Legends provides us Data Scientists with a treasure trove of data for us to work with and to engineer and analyze many difference dynamics of the game.
 
-## Project Overview
-
-The project follows the Data Science Lifecycle, breaking the analysis into multiple stages:
-<iframe
-  src="assets/file-name.html"
-  width="800"
-  height="600"
-  frameborder="0"
-></iframe>
-1. **Introduction and Question Identification**  
-   - **Dataset**: A dataset containing detailed match statistics for League of Lsegends games.
-   - **Research Question**: How does the vision score of players or teams correlate with match outcomes?  
-   - **Relevance**: Vision score is a critical yet often underappreciated component of gameplay. Understanding its impact on success can offer insights into strategies for competitive play.
-   - **Dataset Details**: The dataset contains X rows and Y columns, with relevant columns including:
-     - `vision_score`: The total vision score for a player.
-     - `team_outcome`: Whether the team won or lost the match.
-     - `role`: The role of the player (e.g., ADC, Support, etc.).
-   - **Descriptions of Relevant Columns**:
-     - **`vision_score`**: A numerical score representing a player's contribution to vision control during the game.
-     - **`team_outcome`**: A categorical variable indicating the match result (Win/Loss).
-     - **`role`**: A categorical variable indicating the role of the player in the game.
-
-2. **Data Cleaning and Exploratory Data Analysis (EDA)**  
-   - Data cleaning involved handling missing values in the `vision_score` column, converting roles to a standardized format, and creating new features such as vision score per minute.
-   - Univariate and bivariate analyses were conducted to explore the distribution of vision scores and their relationship with team outcomes and player roles.
-
-3. **Assessment of Missingness**  
-   - Analyzed the missingness in `vision_score` and its dependency on `role` and `team_outcome`.
-   - Identified that `vision_score` missingness is **not missing at random (NMAR)**, likely influenced by data collection methods.
-
-4. **Hypothesis Testing**  
-   - **Hypotheses**:  
-     - Null Hypothesis: The average vision score does not differ between winning and losing teams.  
-     - Alternative Hypothesis: The average vision score differs between winning and losing teams.  
-   - **Results**: Conducted permutation tests and calculated a p-value of X, leading to a conclusion regarding the relationship between vision score and match success.
+League of Legends is a highly competitive game, where players naturally strive to secure victory. In each game, two teams of five players face off, aiming to destroy the opposing team’s central base, known as the Nexus.This brings us to the question, what is the most effective strategy to achieve this goal? League of Legends isn’t just about racking up kills—victory often hinges on less obvious factors like Vision Score. This crucial yet often overlooked metric helps teams gather vital map information, making it easier to track enemy movements and objectives, which is essential for strategic gameplay. That said, how crucial is Vision Score when it comes to securing victory? **To answer this question, we conducted a detailed data analysis to uncover the impact of Vision Score across different roles and its significance in shaping the outcome of a match.**
