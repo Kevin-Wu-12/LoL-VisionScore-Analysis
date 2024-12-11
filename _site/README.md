@@ -158,7 +158,7 @@ The first few rows of the combined dataframe are down below:
 ></iframe>
 
 <iframe
-  src="assets/VSPM_ALL.html"
+  src="assets/VSPM_All.html"
   width="750"
   height="500"
   frameborder="0"
@@ -428,7 +428,7 @@ For our fairness analysis, we chose RMSE as our evaluation metric, with the test
 - **P-value**: 1.0000
 
 ### **Conclusion**
-Based on the resulting p-value of 1.0000 being greater than our significance level of 0.05, we fail to reject the null hypothesis. We do not have enough evidence to conclude that our model is unfair and that its RMSE for the jungle position is lower than its RMSE for the support position. Our conclusion indicates that the model appears fair, and any observed differences in RMSE are likely due to random chance.
+Based on the resulting p-value of 1.00 being greater than our significance level of 0.05, we fail to reject the null hypothesis. We do not have enough evidence to conclude that our model is unfair and that its RMSE for the jungle position is lower than its RMSE for the support position. Our conclusion indicates that the model appears fair, and any observed differences in RMSE are likely due to random chance.
 
 
 
