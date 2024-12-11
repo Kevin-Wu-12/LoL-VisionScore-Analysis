@@ -4,7 +4,7 @@ A UCSD DSC80 project focused on analyzing the impact of vision score in League o
 
 ## Introduction
 
-Welcome to the world of Vision Score! League of Legends (LOL) is a massively popular online multiply multiplayer online battle game (MOBA) with millions of players across the globe. With so many players actively playing the game League of Legends provides us Data Scientists with a treasure trove of data for us to work with and to engineer and analyze many difference dynamics of the game.
+Welcome to the world of Vision Score! League of Legends (LOL) is a massively popular multiplayer online battle game (MOBA) with millions of players across the globe. With so many players actively playing the game League of Legends provides us Data Scientists with a treasure trove of data for us to work with and to engineer and analyze many different dynamics of the game.
 
 League of Legends is a highly competitive game, where players naturally strive to secure victory. In each game, two teams of five players face off, aiming to destroy the opposing team’s central base, known as the Nexus.This brings us to the question, what is the most effective strategy to achieve this goal? League of Legends isn’t just about racking up kills—victory often hinges on less obvious factors like Vision Score. This crucial yet often overlooked metric helps teams gather vital map information, making it easier to track enemy movements and objectives, which is essential for strategic gameplay. That said, how crucial is Vision Score when it comes to securing victory? **To answer this question, I conducted a detailed data analysis to uncover the impact of Vision Score across different roles and its significance in shaping the outcome of a match.**
 
@@ -39,6 +39,8 @@ To clean and preprocess the data, my first step was to first identify missing va
 
 
 Next, I created a new column to assess vision efficiency by calculating the average team vision score per minute `vspm` for each `teamid`. Using this column, I then added a binary above mean column to indicate whether a team's vision score was above `1` or below `0` the mean.
+
+After I also encoded the result column to make 1s represent `Win` and 0s represent `Loss`
 
 I then standardized all numerical columns using a custom helper function with StandardScaler to ensure the data was properly scaled for analysis.
 
@@ -186,7 +188,7 @@ Junglers, however, fall somewhere in the middle, as maintaining awareness of the
 
 ## Interesting Aggregates
 
-To delve deeper into the distribution of vspm (Vision Score Per Minute) and its relationship with player performance, we plotted overlaid histograms of all players' vspm values and a piviot table representing average z-score of `vspm` of all positions that win or lose.
+To delve deeper into the distribution of vspm (Vision Score Per Minute) and its relationship with player performance, we plotted overlaid histograms of all players' vspm values and a pivot table representing average z-score of `vspm` of all positions that win or lose.
 
 <iframe
   src="assets/all_mean.html"
@@ -242,7 +244,7 @@ The first column I decided to test  missingness aginast was the `gamelength` col
 - Test statistic: Absolute Difference in Means
 - Significance level: 5% (0.05)
 
-We performed a permutation test to determine whether or not the missingness of `pentakill` was dependent on `gamelength` using Aboslute Difference in Means as our test statistic. The plot below illustrates the empircal distirbution of the Absolute Difference in means, where are observed value is the red vertical line.
+We performed a permutation test to determine whether or not the missingness of `pentakill` was dependent on `gamelength` using Aboslute Difference in Means as our test statistic. The plot below illustrates the empiricall distirbution of the Absolute Difference in means, where are observed value is the red vertical line.
 
 **Results:**
 - **Observed**: 0.0
@@ -319,7 +321,8 @@ The task is to predict the **vision scores** of a player based on their post-gam
 ### Response Variable
 
 - **Variable:** Vision Score
-- **Reason for Choice:** The vision score represents a player's ability to perceive and manage the game environment, which is a crucial performance metric in **League of Legends**. Predicting this score helps in understanding how effectively players use vision, an important skill for strategic gameplay.
+- **Reason for Choice:** Vision score represents a player's ability to perceive and manage the game environment on the map, which is a crucial in **League of Legends**. 
+Predicting this score helps in understanding how effectively players use vision, an important skill for strategic gameplay.
 
 
 ### Evaluation Metrics
