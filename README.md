@@ -2,7 +2,26 @@
 
 A UCSD DSC80 project focused on analyzing the impact of vision score in League of Legends
 
-## Introduction
+# Table of Contents
+- [Introduction](#introduction)
+  - [Introduction of Dataset and Columns](#introduction-of-dataset-and-columns)
+- [Data Cleaning and EDA](#data-cleaning-and-eda-exploratory-data-analysis)
+  - [Data Cleaning](#data-cleaning)
+  - [Univariate Analysis](#univariate-analysis)
+  - [Bivariate Analysis](#bivariate-analysis)
+  - [Interesting Aggregates](#interesting-aggregates)
+- [Assessment of Missingness](#assessment-of-missingness)
+  - [NMAR Analysis](#nmar-analysis)
+  - [Missingness Dependency](#missingness-dependency)
+- [Hypothesis Testing](#hypothesis-testing)
+- [Framing a Prediction Problem](#framing-a-prediction-problem)
+  - [Prediction Problem](#prediction-problem-can-we-predict-the-vision-scores-of-a-player-based-on-post-game-statistics)
+  - [Evaluation Metrics](#evaluation-metrics)
+  - [Baseline Model](#baseline-model)
+  - [Final Model](#final-model)
+- [Fairness Analysis](#fairness-analysis)
+
+# Introduction
 
 Welcome to the world of Vision Score! League of Legends (LOL) is a massively popular multiplayer online battle game (MOBA) with millions of players across the globe. With so many players actively playing the game League of Legends provides us Data Scientists with a treasure trove of data for us to work with and to engineer and analyze many different dynamics of the game.
 
@@ -13,7 +32,7 @@ That said, how crucial is Vision Score when it comes to securing victory?
 
 For my analysis, I used the 2022 League of Legends Esports Stats dataset from Oracle’s Elixir, a platform offering many different advanced statistics for the game. This dataset includes detailed performance data from thousands of professional matches across various tournaments, providing insights into players, teams, and outcomes.
 
-# Introduction of Dataset and Columns
+## Introduction of Dataset and Columns
 
 The original dataset contained **150,180 rows** and **161 columns**, however I cleaned the dataset to only include relevant information that is needed for our analysis. The resulting data frame consists of **150,168 rows** and **13 columns**
 The table below shows the columns and their definitions.

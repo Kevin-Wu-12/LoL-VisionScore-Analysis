@@ -40,17 +40,53 @@
 
 <p>A UCSD DSC80 project focused on analyzing the impact of vision score in League of Legends</p>
 
-<h2 id="introduction">Introduction</h2>
+<h1 id="table-of-contents">Table of Contents</h1>
+<ul>
+  <li><a href="#introduction">Introduction</a>
+    <ul>
+      <li><a href="#introduction-of-dataset-and-columns">Introduction of Dataset and Columns</a></li>
+    </ul>
+  </li>
+  <li><a href="#data-cleaning-and-eda-exploratory-data-analysis">Data Cleaning and EDA</a>
+    <ul>
+      <li><a href="#data-cleaning">Data Cleaning</a></li>
+      <li><a href="#univariate-analysis">Univariate Analysis</a></li>
+      <li><a href="#bivariate-analysis">Bivariate Analysis</a></li>
+      <li><a href="#interesting-aggregates">Interesting Aggregates</a></li>
+    </ul>
+  </li>
+  <li><a href="#assessment-of-missingness">Assessment of Missingness</a>
+    <ul>
+      <li><a href="#nmar-analysis">NMAR Analysis</a></li>
+      <li><a href="#missingness-dependency">Missingness Dependency</a></li>
+    </ul>
+  </li>
+  <li><a href="#hypothesis-testing">Hypothesis Testing</a></li>
+  <li><a href="#framing-a-prediction-problem">Framing a Prediction Problem</a>
+    <ul>
+      <li><a href="#prediction-problem-can-we-predict-the-vision-scores-of-a-player-based-on-post-game-statistics">Prediction Problem</a></li>
+      <li><a href="#evaluation-metrics">Evaluation Metrics</a></li>
+      <li><a href="#baseline-model">Baseline Model</a></li>
+      <li><a href="#final-model">Final Model</a></li>
+    </ul>
+  </li>
+  <li><a href="#fairness-analysis">Fairness Analysis</a></li>
+</ul>
 
-<p>Welcome to the world of Vision Score! League of Legends (LOL) is a massively popular online multiply multiplayer online battle game (MOBA) with millions of players across the globe. With so many players actively playing the game League of Legends provides us Data Scientists with a treasure trove of data for us to work with and to engineer and analyze many difference dynamics of the game.</p>
+<h1 id="introduction">Introduction</h1>
 
-<p>League of Legends is a highly competitive game, where players naturally strive to secure victory. In each game, two teams of five players face off, aiming to destroy the opposing team’s central base, known as the Nexus.This brings us to the question, what is the most effective strategy to achieve this goal? League of Legends isn’t just about racking up kills—victory often hinges on less obvious factors like Vision Score. This crucial yet often overlooked metric helps teams gather vital map information, making it easier to track enemy movements and objectives, which is essential for strategic gameplay. That said, how crucial is Vision Score when it comes to securing victory? <strong>To answer this question, I conducted a detailed data analysis to uncover the impact of Vision Score across different roles and its significance in shaping the outcome of a match.</strong></p>
+<p>Welcome to the world of Vision Score! League of Legends (LOL) is a massively popular multiplayer online battle game (MOBA) with millions of players across the globe. With so many players actively playing the game League of Legends provides us Data Scientists with a treasure trove of data for us to work with and to engineer and analyze many different dynamics of the game.</p>
+
+<p>League of Legends is a highly competitive game, where players naturally strive to secure victory. In each game, two teams of five players face off, aiming to destroy the opposing team’s central base, known as the Nexus. This raises the question: what is the most effective strategy for achieving victory? League of Legends isn’t just about racking up kills—victory often hinges on less obvious factors like Vision Score. 
+This crucial yet often overlooked metric helps teams gather vital map information, making it easier to track enemy movements and objectives, which is essential for strategic gameplay. 
+That said, how crucial is Vision Score when it comes to securing victory? 
+<strong>To answer this question, I conducted a detailed data analysis to uncover the impact of Vision Score across different roles and its significance in shaping the outcome of a match.</strong></p>
 
 <p>For my analysis, I used the 2022 League of Legends Esports Stats dataset from Oracle’s Elixir, a platform offering many different advanced statistics for the game. This dataset includes detailed performance data from thousands of professional matches across various tournaments, providing insights into players, teams, and outcomes.</p>
 
-<h1 id="introduction-of-dataset-and-columns">Introduction of Dataset and Columns</h1>
+<h2 id="introduction-of-dataset-and-columns">Introduction of Dataset and Columns</h2>
 
-<p>Our original dataset contained <strong>150,180 rows</strong> and <strong>161 columns</strong>, however I cleaned the dataset to only include relevant information that is needed for our analysis. The resulting data frame consists of <strong>150,168 rows</strong> and <strong>13 columns</strong>
+<p>The original dataset contained <strong>150,180 rows</strong> and <strong>161 columns</strong>, however I cleaned the dataset to only include relevant information that is needed for our analysis. The resulting data frame consists of <strong>150,168 rows</strong> and <strong>13 columns</strong>
 The table below shows the columns and their definitions.</p>
 
 <table>
@@ -79,7 +115,7 @@ The table below shows the columns and their definitions.</p>
     </tr>
     <tr>
       <td style="text-align: left"><code class="language-plaintext highlighter-rouge">vspm</code></td>
-      <td style="text-align: left">visions core per minute</td>
+      <td style="text-align: left">vision score per minute</td>
     </tr>
     <tr>
       <td style="text-align: left"><code class="language-plaintext highlighter-rouge">visionscore</code></td>
@@ -99,7 +135,7 @@ The table below shows the columns and their definitions.</p>
     </tr>
     <tr>
       <td style="text-align: left"><code class="language-plaintext highlighter-rouge">wardsplaced</code></td>
-      <td style="text-align: left">wardsplaced</td>
+      <td style="text-align: left">number of wards placed</td>
     </tr>
     <tr>
       <td style="text-align: left"><code class="language-plaintext highlighter-rouge">gamelength</code></td>
@@ -107,7 +143,7 @@ The table below shows the columns and their definitions.</p>
     </tr>
     <tr>
       <td style="text-align: left"><code class="language-plaintext highlighter-rouge">pentakills</code></td>
-      <td style="text-align: left">number of pentakills</td>
+      <td style="text-align: left">number of penta kills</td>
     </tr>
   </tbody>
 </table>
@@ -116,9 +152,11 @@ The table below shows the columns and their definitions.</p>
 
 <h2 id="data-cleaning">Data Cleaning</h2>
 
-<p>To clean and preprocess the data, my first step was to first identify missing values in the data. I discovered that for the columns related to vision like <code class="language-plaintext highlighter-rouge">visionscore</code> and <code class="language-plaintext highlighter-rouge">vspm</code> had 12 missing values when the <code class="language-plaintext highlighter-rouge">datacompletness</code> was “partial” and when the specific game id was <code class="language-plaintext highlighter-rouge">8479-8479_game_1</code>. Given that this represents a very small subset of the data, I opted for listwise deletion to remove these rows before proceeding to the next steps.</p>
+<p>To clean and preprocess the data, my first step was to first identify missing values. I discovered that for the columns related to vision like <code class="language-plaintext highlighter-rouge">visionscore</code> and <code class="language-plaintext highlighter-rouge">vspm</code> had 12 missing values when the <code class="language-plaintext highlighter-rouge">datacompleteness"</code> was “partial” and when the specific game id was <code class="language-plaintext highlighter-rouge">8479-8479_game_1</code>. Given that this represents a very small subset of the data, I opted for listwise deletion to remove these rows before proceeding to the next steps.</p>
 
 <p>Next, I created a new column to assess vision efficiency by calculating the average team vision score per minute <code class="language-plaintext highlighter-rouge">vspm</code> for each <code class="language-plaintext highlighter-rouge">teamid</code>. Using this column, I then added a binary above mean column to indicate whether a team’s vision score was above <code class="language-plaintext highlighter-rouge">1</code> or below <code class="language-plaintext highlighter-rouge">0</code> the mean.</p>
+
+<p>After I also encoded the result column to make 1s represent <code class="language-plaintext highlighter-rouge">Win</code> and 0s represent <code class="language-plaintext highlighter-rouge">Loss</code></p>
 
 <p>I then standardized all numerical columns using a custom helper function with StandardScaler to ensure the data was properly scaled for analysis.</p>
 
@@ -242,11 +280,11 @@ The first few rows of the combined dataframe are down below:</p>
 
 <p>From the visualization, we can see that the support role consistently exhibits the highest average z-scores, particularly excelling in metrics like <code class="language-plaintext highlighter-rouge">wpm</code>, highlighting its critical role in map control and team vision. In contrast, top lane and mid lane show the lowest average z-scores across these metrics, reflecting their focus on individual lane control and resource accumulation rather than team-oriented vision contributions.</p>
 
-<p>Junglers, however, fall somewhere in the middle, as maintaining awareness of the enemy jungler’s location is crucial for their role. Notably we cab see that the mean z-score for wards killed for junglers is higher than for supports which is attributed to the fact that their role in traversing the whole map multiple times throughout the game. This wider coverage of the map naturally leads to more opportunities for destroying enemy wards. This side-by-side comparison provides a clear understanding of how each role contributes to vision-based objectives in League of Legends.</p>
+<p>Junglers, however, fall somewhere in the middle, as maintaining awareness of the enemy jungler’s location is crucial for their role. Notably we can see that the mean z-score for wards killed for junglers is higher than for supports which is attributed to the fact that their role in traversing the whole map multiple times throughout the game. This wider coverage of the map naturally leads to more opportunities for destroying enemy wards. This side-by-side comparison provides a clear understanding of how each role contributes to vision-based objectives in League of Legends.</p>
 
 <h2 id="interesting-aggregates">Interesting Aggregates</h2>
 
-<p>To delve deeper into the distribution of vspm (Vision Score Per Minute) and its relationship with player performance, we plotted overlaid histograms of all players’ vspm values and a piviot table representing average z-score of <code class="language-plaintext highlighter-rouge">vspm</code> of all positions that win or lose.</p>
+<p>To delve deeper into the distribution of vspm (Vision Score Per Minute) and its relationship with player performance, we plotted overlaid histograms of all players’ vspm values and a pivot table representing average z-score of <code class="language-plaintext highlighter-rouge">vspm</code> of all positions that win or lose.</p>
 
 <iframe src="assets/all_mean.html" width="700" height="500" frameborder="0"></iframe>
 
@@ -254,7 +292,7 @@ The first few rows of the combined dataframe are down below:</p>
 
 <iframe src="assets/all_mean.html" width="700" height="500" frameborder="0"></iframe>
 
-<p>Building on the previous plot, this visulization shows us the <code class="language-plaintext highlighter-rouge">vspm</code> (Vision Score Per Minute) of all players, categorized by win or loss. We observe that players who win tend to higher higher <code class="language-plaintext highlighter-rouge">vspm</code>. Additionally, the shapes between this plot and the previous plot are similar which can indicate that for players with a <code class="language-plaintext highlighter-rouge">vspm</code> above they are more likly to win.</p>
+<p>Building on the previous plot, this visualization shows us the <code class="language-plaintext highlighter-rouge">vspm</code> (Vision Score Per Minute) of all players, categorized by win or loss. We observe that players who win tend to higher higher <code class="language-plaintext highlighter-rouge">vspm</code>. Additionally, the shapes between this plot and the previous plot are similar which can indicate that for players with a <code class="language-plaintext highlighter-rouge">vspm</code> above they are more likly to win.</p>
 
 <p>The table below represents an aggregate of the vspm (Vision Score Per Minute) z-score distributions for each position, categorized by whether the players win or lose:</p>
 
@@ -291,16 +329,16 @@ The first few rows of the combined dataframe are down below:</p>
 
 <p>In order to generate this table, I created a pivot table with:</p>
 <ul>
-  <li><strong>Values:</strong> <code class="language-plaintext highlighter-rouge">visonscore</code></li>
+  <li><strong>Values:</strong> <code class="language-plaintext highlighter-rouge">visionscore</code></li>
   <li><strong>Index:</strong> <code class="language-plaintext highlighter-rouge">result</code> (Win/Loss)</li>
   <li><strong>Columns:</strong> <code class="language-plaintext highlighter-rouge">position</code> (top, jng, mid, bot, sup)</li>
   <li><strong>Aggregation function:</strong> Mean</li>
 </ul>
 
-<p>The pivot table reveals that the <code class="language-plaintext highlighter-rouge">visonscore</code> z-scores are generally higher for players who win compared to those who lose, across all positions, fortifying the previous asumptions. Notably:</p>
+<p>The pivot table reveals that the <code class="language-plaintext highlighter-rouge">visionscore</code> z-scores are generally higher for players who win compared to those who lose, across all positions, fortifying the previous assumptions. Notably:</p>
 <ul>
-  <li>Support players exhibit a positive <code class="language-plaintext highlighter-rouge">visonscore</code> z-score in both wins and losses, with a significant increase in wins.</li>
-  <li>The jungle role shows the largest improvement in <code class="language-plaintext highlighter-rouge">visonscore</code> from losses to wins.</li>
+  <li>Support players exhibit a positive <code class="language-plaintext highlighter-rouge">visionscore</code> z-score in both wins and losses, with a significant increase in wins.</li>
+  <li>The jungle role shows the largest improvement in <code class="language-plaintext highlighter-rouge">visionscore</code> from losses to wins.</li>
   <li>Across all positions, winning players tend to achieve closer-to-average or above-average vision scores.</li>
 </ul>
 
@@ -310,21 +348,21 @@ The first few rows of the combined dataframe are down below:</p>
 
 <p>I suspect that the missing values in the <code class="language-plaintext highlighter-rouge">ban5</code> column of our dataset are not missing at random (NMAR). The absence of values in this column does not appear to follow any identifiable pattern, suggesting that some teams may have either chosen not to ban a fifth champion or forgotten to do so. This implies that the missingness in ban5 depends on the actual value of the missing data itself, which is characteristic of NMAR missingness.</p>
 
-<h2 id="missingness-dependecy">Missingness Dependecy</h2>
+<h2 id="missingness-dependency">Missingness Dependency</h2>
 
-<p>Looking throughout the dataset I was particuarally intered in the column <code class="language-plaintext highlighter-rouge">pentakills</code>. I noticed that a lot of these values were missing, which lead me to decide to test the missingness dependecy of this column.</p>
+<p>Looking throughout the dataset I was particularly interested in the column <code class="language-plaintext highlighter-rouge">pentakills</code>. I noticed that a lot of these values were missing, which lead me to decide to test the missingness dependency of this column.</p>
 
-<p>The first column I decided to test  missingness aginast was the <code class="language-plaintext highlighter-rouge">gamelength</code> column</p>
+<p>The first column I decided to test  missingness against was the <code class="language-plaintext highlighter-rouge">gamelength</code> column</p>
 
-<p><strong>Null Hypothesis</strong>: Distribution of <code class="language-plaintext highlighter-rouge">'gamelength'</code> when <code class="language-plaintext highlighter-rouge">'pentakill'</code> is missing is the same as the distribution of <code class="language-plaintext highlighter-rouge">'gamelength'</code> when <code class="language-plaintext highlighter-rouge">'pentakill'</code> is not missing.</p>
+<p><strong>Null Hypothesis</strong>: Distribution of <code class="language-plaintext highlighter-rouge">'gamelength'</code> when <code class="language-plaintext highlighter-rouge">'pentakills'</code> is missing is the same as the distribution of <code class="language-plaintext highlighter-rouge">'gamelength'</code> when <code class="language-plaintext highlighter-rouge">'pentakills'</code> is not missing.</p>
 
-<p><strong>Alternative Hypothesis</strong>: Distribution of <code class="language-plaintext highlighter-rouge">'gamelength'</code> when <code class="language-plaintext highlighter-rouge">'pentakill'</code> is missing is not the same as the distribution of <code class="language-plaintext highlighter-rouge">'gamelength'</code> when <code class="language-plaintext highlighter-rouge">'pentakill'</code> is not missing.</p>
+<p><strong>Alternative Hypothesis</strong>: Distribution of <code class="language-plaintext highlighter-rouge">'gamelength'</code> when <code class="language-plaintext highlighter-rouge">'pentakills'</code> is missing is not the same as the distribution of <code class="language-plaintext highlighter-rouge">'gamelength'</code> when <code class="language-plaintext highlighter-rouge">'pentakills'</code> is not missing.</p>
 <ul>
   <li>Test statistic: Absolute Difference in Means</li>
   <li>Significance level: 5% (0.05)</li>
 </ul>
 
-<p>We performed a permutation test to determine whether or not the missingness of <code class="language-plaintext highlighter-rouge">pentakill</code> was dependent on <code class="language-plaintext highlighter-rouge">gamelength</code> using Aboslute Difference in Means as our test statistic. The plot below illustrates the empircal distirbution of the Absolute Difference in means, where are observed value is the red vertical line.</p>
+<p>We performed a permutation test to determine whether or not the missingness of <code class="language-plaintext highlighter-rouge">pentakills</code> was dependent on <code class="language-plaintext highlighter-rouge">gamelength</code> using Absolute Difference in Means as our test statistic. The plot below illustrates the empirical distribution of the Absolute Difference in means, where are observed value is the red vertical line.</p>
 
 <p><strong>Results:</strong></p>
 <ul>
@@ -333,19 +371,19 @@ The first few rows of the combined dataframe are down below:</p>
 </ul>
 <iframe src="assets/missing_reject1.html" width="700" height="500" frameborder="0"></iframe>
 
-<p>We caluclaed our p-value and then compared it agianst the observed Absolute Difference in Means through permuation testing, and the resulting p-value I got was 0. Since our p-value is less than our set significance level of 0.05, it leads us to <strong>reject</strong> the null hypothesis and therefore it is highly likely that the missingness in <code class="language-plaintext highlighter-rouge">pentakill</code> depends on <code class="language-plaintext highlighter-rouge">gamelangth</code></p>
+<p>We calculated our p-value and then compared it against the observed Absolute Difference in Means through permutation testing, and the resulting p-value I got was 0. Since our p-value is less than our set significance level of 0.05, it leads us to <strong>reject</strong> the null hypothesis and therefore it is highly likely that the missingness in <code class="language-plaintext highlighter-rouge">pentakills</code> depends on <code class="language-plaintext highlighter-rouge">gamelength</code></p>
 
 <p>The second column I chose to test missingness on <code class="language-plaintext highlighter-rouge">result</code>.</p>
 
-<p><strong>Null Hypothesis</strong>: Distribution of <code class="language-plaintext highlighter-rouge">result</code> when <code class="language-plaintext highlighter-rouge">pentakill</code> is missing is the same as the distribution of <code class="language-plaintext highlighter-rouge">result</code> when <code class="language-plaintext highlighter-rouge">pentakill</code> is not missing.</p>
+<p><strong>Null Hypothesis</strong>: Distribution of <code class="language-plaintext highlighter-rouge">result</code> when <code class="language-plaintext highlighter-rouge">pentakills</code> is missing is the same as the distribution of <code class="language-plaintext highlighter-rouge">result</code> when <code class="language-plaintext highlighter-rouge">pentakills</code> is not missing.</p>
 
-<p><strong>Alternative Hypothesis</strong>: Distribution of <code class="language-plaintext highlighter-rouge">result</code> when <code class="language-plaintext highlighter-rouge">pentakill</code> is missing is not the same as the distribution of <code class="language-plaintext highlighter-rouge">result</code> when <code class="language-plaintext highlighter-rouge">pentakill</code> is not missing.</p>
+<p><strong>Alternative Hypothesis</strong>: Distribution of <code class="language-plaintext highlighter-rouge">result</code> when <code class="language-plaintext highlighter-rouge">pentakills</code> is missing is not the same as the distribution of <code class="language-plaintext highlighter-rouge">result</code> when <code class="language-plaintext highlighter-rouge">pentakills</code> is not missing.</p>
 <ul>
   <li>Test statistic: Total Variation Distance (TVD)</li>
   <li>Significance level: 5% (0.05)</li>
 </ul>
 
-<p>We performed a permutation test to determine whether or not the missingness of <code class="language-plaintext highlighter-rouge">pentakill</code> was dependent on <code class="language-plaintext highlighter-rouge">result</code> total variation distance (TVD) as our test statistic. The plot below illustrates the empircal distirbution of the TVDs, where are observed value is the red vertical line.</p>
+<p>We performed a permutation test to determine whether or not the missingness of <code class="language-plaintext highlighter-rouge">pentakills</code> was dependent on <code class="language-plaintext highlighter-rouge">result</code> total variation distance (TVD) as our test statistic. The plot below illustrates the empirical distribution of the TVDs, where are observed value is the red vertical line.</p>
 
 <p><strong>Results:</strong></p>
 <ul>
@@ -354,7 +392,7 @@ The first few rows of the combined dataframe are down below:</p>
 </ul>
 <iframe src="assets/missing_fail_reject1.html" width="700" height="500" frameborder="0"></iframe>
 
-<p>By comparing the TVDs through permuatation and the observed TVD I found that the resulting p-value was 1.0 which is greater than our significance level of 0.05. This means that we must <strong>fail to reject</strong> the null and conclude that the missingness in <code class="language-plaintext highlighter-rouge">pentakill</code> is most likely not dependent on <code class="language-plaintext highlighter-rouge">result</code></p>
+<p>By comparing the TVDs through permutation and the observed TVD I found that the resulting p-value was 1.0 which is greater than our significance level of 0.05. This means that we must <strong>fail to reject</strong> the null and conclude that the missingness in <code class="language-plaintext highlighter-rouge">pentakills</code> is most likely not dependent on <code class="language-plaintext highlighter-rouge">result</code>.</p>
 
 <h2 id="hypothesis-testing">Hypothesis Testing</h2>
 
@@ -394,7 +432,8 @@ The first few rows of the combined dataframe are down below:</p>
 
 <ul>
   <li><strong>Variable:</strong> Vision Score</li>
-  <li><strong>Reason for Choice:</strong> The vision score represents a player’s ability to perceive and manage the game environment, which is a crucial performance metric in <strong>League of Legends</strong>. Predicting this score helps in understanding how effectively players use vision, an important skill for strategic gameplay.</li>
+  <li><strong>Reason for Choice:</strong> Vision score represents a player’s ability to perceive and manage the game environment on the map, which is a crucial in <strong>League of Legends</strong>. 
+Predicting this score helps in understanding how effectively players use vision, an important skill for strategic gameplay.</li>
 </ul>
 
 <h3 id="evaluation-metrics">Evaluation Metrics</h3>
@@ -412,7 +451,7 @@ The first few rows of the combined dataframe are down below:</p>
   </li>
   <li><strong>Mean Bias Error (MBE):</strong>
     <ul>
-      <li><strong>Mean BiasE (MBE)</strong> Measures the average difference between the predicted values and the true values. It helps identify if the model tends to over-predict or under-predict systematically.</li>
+      <li><strong>Mean Bias Error (MBE)</strong> Measures the average difference between the predicted values and the true values. It helps identify if the model tends to over-predict or under-predict systematically.</li>
     </ul>
   </li>
 </ol>
@@ -433,7 +472,7 @@ The first few rows of the combined dataframe are down below:</p>
   <li><strong>Target Variable</strong>: <code class="language-plaintext highlighter-rouge">visionscore</code> (the vision score of the player)</li>
   <li><strong>Features</strong>:
     <ul>
-      <li>Numerical features: <code class="language-plaintext highlighter-rouge">gamelength</code>(Quatative, discrete), <code class="language-plaintext highlighter-rouge">wardsplaced</code>(Quantitive, nominal)</li>
+      <li>Numerical features: <code class="language-plaintext highlighter-rouge">gamelength</code>(Quantitative, discrete), <code class="language-plaintext highlighter-rouge">wardsplaced</code>(Quantitative, nominal)</li>
     </ul>
   </li>
 </ul>
@@ -482,12 +521,13 @@ The first few rows of the combined dataframe are down below:</p>
 <p>The additional features were chosen based on their relevance to vision score, as these variables are directly tied to a player’s contribution to vision control and strategy during the game:</p>
 
 <ul>
-  <li><strong><code class="language-plaintext highlighter-rouge">controlwardsbought</code> and <code class="language-plaintext highlighter-rouge">wardskilled</code></strong>: These metrics capture a player’s active participation in vision control by buying control wards and destroying wards, which are critical for improving the vision score.</li>
-  <li><strong><code class="language-plaintext highlighter-rouge">wpm</code> (wards per minute)</strong>: This feature accounts for the efficiency of ward placement over the game duration which gives us normalized measure of vision contribution.</li>
-  <li><strong><code class="language-plaintext highlighter-rouge">result</code> (outcome of the game)</strong>: From previous analysis, players who win have a higher vision score on average compared to those who lose.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">controlwardsbought</code></strong>: Buying control wards significantly impacts vision score, as these wards help deny enemy vision and provide substantial vision contributions to the player.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">wardskilled</code></strong>: The number of wards a player kills has a strong correlation with vision score, as destroying enemy wards directly increases the player’s vision score.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">wpm</code> (wards per minute)</strong>: This feature normalizes ward placement efficiency over the game duration, offering a standardized measure of the player’s vision contributions.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">result</code> (outcome of the game)</strong>: Previous analyses indicate that players on the winning team tend to have higher vision scores on average compared to those on the losing team.</li>
 </ul>
 
-<p>By incorporating these features, the model captures imporant aspects of a player’s vision-related performance, making the predictions more comprehensive and accurate.</p>
+<p>By incorporating these features, the model captures important aspects of a player’s vision-related performance, making the predictions more comprehensive and accurate.</p>
 
 <p>The model was trained on the following dataset:</p>
 
@@ -512,6 +552,13 @@ The first few rows of the combined dataframe are down below:</p>
   <li><strong>RMSE</strong>: 0.0886</li>
   <li><strong>MBE</strong>: -0.0022</li>
 </ul>
+
+<h2 id="residual-plot">Residual Plot</h2>
+<p>Below is the residual plot:</p>
+
+<iframe src="assets/residuals.html" width="750" height="500" frameborder="0"></iframe>
+
+<p>The residual plot indicates that the model does not have much bias, as the residuals are scattered randomly around zero with no clear pattern.</p>
 
 <h3 id="model-interpretation-1">Model Interpretation</h3>
 
