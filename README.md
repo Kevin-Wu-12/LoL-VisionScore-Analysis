@@ -6,7 +6,10 @@ A UCSD DSC80 project focused on analyzing the impact of vision score in League o
 
 Welcome to the world of Vision Score! League of Legends (LOL) is a massively popular multiplayer online battle game (MOBA) with millions of players across the globe. With so many players actively playing the game League of Legends provides us Data Scientists with a treasure trove of data for us to work with and to engineer and analyze many different dynamics of the game.
 
-League of Legends is a highly competitive game, where players naturally strive to secure victory. In each game, two teams of five players face off, aiming to destroy the opposing team’s central base, known as the Nexus.This brings us to the question, what is the most effective strategy to achieve this goal? League of Legends isn’t just about racking up kills—victory often hinges on less obvious factors like Vision Score. This crucial yet often overlooked metric helps teams gather vital map information, making it easier to track enemy movements and objectives, which is essential for strategic gameplay. That said, how crucial is Vision Score when it comes to securing victory? **To answer this question, I conducted a detailed data analysis to uncover the impact of Vision Score across different roles and its significance in shaping the outcome of a match.**
+League of Legends is a highly competitive game, where players naturally strive to secure victory. In each game, two teams of five players face off, aiming to destroy the opposing team’s central base, known as the Nexus.This brings us to the question, what is the most effective strategy to achieve this goal? League of Legends isn’t just about racking up kills—victory often hinges on less obvious factors like Vision Score. 
+This crucial yet often overlooked metric helps teams gather vital map information, making it easier to track enemy movements and objectives, which is essential for strategic gameplay. 
+That said, how crucial is Vision Score when it comes to securing victory? 
+**To answer this question, I conducted a detailed data analysis to uncover the impact of Vision Score across different roles and its significance in shaping the outcome of a match.**
 
 For my analysis, I used the 2022 League of Legends Esports Stats dataset from Oracle’s Elixir, a platform offering many different advanced statistics for the game. This dataset includes detailed performance data from thousands of professional matches across various tournaments, providing insights into players, teams, and outcomes.
 
@@ -35,7 +38,7 @@ The table below shows the columns and their definitions.
 
 ## Data Cleaning
 
-To clean and preprocess the data, my first step was to first identify missing values in the data. I discovered that for the columns related to vision like `visionscore` and `vspm` had 12 missing values when the `datacompletness` was "partial" and when the specific game id was `8479-8479_game_1`. Given that this represents a very small subset of the data, I opted for listwise deletion to remove these rows before proceeding to the next steps.
+To clean and preprocess the data, my first step was to first identify missing values. I discovered that for the columns related to vision like `visionscore` and `vspm` had 12 missing values when the `datacompletness` was "partial" and when the specific game id was `8479-8479_game_1`. Given that this represents a very small subset of the data, I opted for listwise deletion to remove these rows before proceeding to the next steps.
 
 
 Next, I created a new column to assess vision efficiency by calculating the average team vision score per minute `vspm` for each `teamid`. Using this column, I then added a binary above mean column to indicate whether a team's vision score was above `1` or below `0` the mean.
@@ -184,7 +187,7 @@ The bar graph above displays the average z-scores for each position across key v
 
 From the visualization, we can see that the support role consistently exhibits the highest average z-scores, particularly excelling in metrics like `wpm`, highlighting its critical role in map control and team vision. In contrast, top lane and mid lane show the lowest average z-scores across these metrics, reflecting their focus on individual lane control and resource accumulation rather than team-oriented vision contributions. 
 
-Junglers, however, fall somewhere in the middle, as maintaining awareness of the enemy jungler’s location is crucial for their role. Notably we cab see that the mean z-score for wards killed for junglers is higher than for supports which is attributed to the fact that their role in traversing the whole map multiple times throughout the game. This wider coverage of the map naturally leads to more opportunities for destroying enemy wards. This side-by-side comparison provides a clear understanding of how each role contributes to vision-based objectives in League of Legends.
+Junglers, however, fall somewhere in the middle, as maintaining awareness of the enemy jungler’s location is crucial for their role. Notably we can see that the mean z-score for wards killed for junglers is higher than for supports which is attributed to the fact that their role in traversing the whole map multiple times throughout the game. This wider coverage of the map naturally leads to more opportunities for destroying enemy wards. This side-by-side comparison provides a clear understanding of how each role contributes to vision-based objectives in League of Legends.
 
 ## Interesting Aggregates
 
@@ -234,9 +237,9 @@ I suspect that the missing values in the `ban5` column of our dataset are not mi
 
 ## Missingness Dependecy
 
-Looking throughout the dataset I was particuarally intered in the column `pentakills`. I noticed that a lot of these values were missing, which lead me to decide to test the missingness dependecy of this column.
+Looking throughout the dataset I was particularly interested in the column `pentakills`. I noticed that a lot of these values were missing, which lead me to decide to test the missingness dependency of this column.
 
-The first column I decided to test  missingness aginast was the `gamelength` column
+The first column I decided to test  missingness against was the `gamelength` column
 
 **Null Hypothesis**: Distribution of `'gamelength'` when `'pentakill'` is missing is the same as the distribution of `'gamelength'` when `'pentakill'` is not missing.
 
@@ -244,7 +247,7 @@ The first column I decided to test  missingness aginast was the `gamelength` col
 - Test statistic: Absolute Difference in Means
 - Significance level: 5% (0.05)
 
-We performed a permutation test to determine whether or not the missingness of `pentakill` was dependent on `gamelength` using Aboslute Difference in Means as our test statistic. The plot below illustrates the empiricall distirbution of the Absolute Difference in means, where are observed value is the red vertical line.
+We performed a permutation test to determine whether or not the missingness of `pentakill` was dependent on `gamelength` using Absolute Difference in Means as our test statistic. The plot below illustrates the empirical distribution of the Absolute Difference in means, where are observed value is the red vertical line.
 
 **Results:**
 - **Observed**: 0.0
@@ -256,7 +259,7 @@ We performed a permutation test to determine whether or not the missingness of `
   frameborder="0"
 ></iframe>
 
-We caluclaed our p-value and then compared it agianst the observed Absolute Difference in Means through permuation testing, and the resulting p-value I got was 0. Since our p-value is less than our set significance level of 0.05, it leads us to **reject** the null hypothesis and therefore it is highly likely that the missingness in `pentakill` depends on `gamelangth`
+We calculated our p-value and then compared it against the observed Absolute Difference in Means through permutation testing, and the resulting p-value I got was 0. Since our p-value is less than our set significance level of 0.05, it leads us to **reject** the null hypothesis and therefore it is highly likely that the missingness in `pentakill` depends on `gamelangth`
 
 The second column I chose to test missingness on `result`.
 
@@ -266,7 +269,7 @@ The second column I chose to test missingness on `result`.
 - Test statistic: Total Variation Distance (TVD)
 - Significance level: 5% (0.05)
 
-We performed a permutation test to determine whether or not the missingness of `pentakill` was dependent on `result` total variation distance (TVD) as our test statistic. The plot below illustrates the empircal distirbution of the TVDs, where are observed value is the red vertical line.
+We performed a permutation test to determine whether or not the missingness of `pentakill` was dependent on `result` total variation distance (TVD) as our test statistic. The plot below illustrates the empirical distribution of the TVDs, where are observed value is the red vertical line.
 
 **Results:**
 - **Observed**:0.0
@@ -278,7 +281,7 @@ We performed a permutation test to determine whether or not the missingness of `
   frameborder="0"
 ></iframe>
 
-By comparing the TVDs through permuatation and the observed TVD I found that the resulting p-value was 1.0 which is greater than our significance level of 0.05. This means that we must **fail to reject** the null and conclude that the missingness in `pentakill` is most likely not dependent on `result`
+By comparing the TVDs through permutation and the observed TVD I found that the resulting p-value was 1.0 which is greater than our significance level of 0.05. This means that we must **fail to reject** the null and conclude that the missingness in `pentakill` is most likely not dependent on `result`.
 
 
 
@@ -380,9 +383,10 @@ For our final model, we refined the previous Lasso regression model by including
 
 The additional features were chosen based on their relevance to vision score, as these variables are directly tied to a player’s contribution to vision control and strategy during the game:
 
-- **`controlwardsbought` and `wardskilled`**: These metrics capture a player’s active participation in vision control by buying control wards and destroying wards, which are critical for improving the vision score.
-- **`wpm` (wards per minute)**: This feature accounts for the efficiency of ward placement over the game duration which gives us normalized measure of vision contribution.
-- **`result` (outcome of the game)**: From previous analysis, players who win have a higher vision score on average compared to those who lose.
+- **`controlwardsbought`**: Buying control wards significantly impacts vision score, as these wards help deny enemy vision and provide substantial vision contributions to the player.  
+- **`wardskilled`**: The number of wards a player kills has a strong correlation with vision score, as destroying enemy wards directly increases the player's vision score.  
+- **`wpm` (wards per minute)**: This feature normalizes ward placement efficiency over the game duration, offering a standardized measure of the player's vision contributions.  
+- **`result` (outcome of the game)**: Previous analyses indicate that players on the winning team tend to have higher vision scores on average compared to those on the losing team.  
 
 By incorporating these features, the model captures imporant aspects of a player's vision-related performance, making the predictions more comprehensive and accurate.
 
