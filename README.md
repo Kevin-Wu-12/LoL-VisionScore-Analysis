@@ -6,7 +6,7 @@ A UCSD DSC80 project focused on analyzing the impact of vision score in League o
 
 Welcome to the world of Vision Score! League of Legends (LOL) is a massively popular multiplayer online battle game (MOBA) with millions of players across the globe. With so many players actively playing the game League of Legends provides us Data Scientists with a treasure trove of data for us to work with and to engineer and analyze many different dynamics of the game.
 
-League of Legends is a highly competitive game, where players naturally strive to secure victory. In each game, two teams of five players face off, aiming to destroy the opposing team’s central base, known as the Nexus.This brings us to the question, what is the most effective strategy to achieve this goal? League of Legends isn’t just about racking up kills—victory often hinges on less obvious factors like Vision Score. 
+League of Legends is a highly competitive game, where players naturally strive to secure victory. In each game, two teams of five players face off, aiming to destroy the opposing team’s central base, known as the Nexus. This raises the question: what is the most effective strategy for achieving victory? League of Legends isn’t just about racking up kills—victory often hinges on less obvious factors like Vision Score. 
 This crucial yet often overlooked metric helps teams gather vital map information, making it easier to track enemy movements and objectives, which is essential for strategic gameplay. 
 That said, how crucial is Vision Score when it comes to securing victory? 
 **To answer this question, I conducted a detailed data analysis to uncover the impact of Vision Score across different roles and its significance in shaping the outcome of a match.**
@@ -15,7 +15,7 @@ For my analysis, I used the 2022 League of Legends Esports Stats dataset from Or
 
 # Introduction of Dataset and Columns
 
-Our original dataset contained **150,180 rows** and **161 columns**, however I cleaned the dataset to only include relevant information that is needed for our analysis. The resulting data frame consists of **150,168 rows** and **13 columns**
+The original dataset contained **150,180 rows** and **161 columns**, however I cleaned the dataset to only include relevant information that is needed for our analysis. The resulting data frame consists of **150,168 rows** and **13 columns**
 The table below shows the columns and their definitions.
 
  Column Name        | Definition                                |
@@ -24,21 +24,21 @@ The table below shows the columns and their definitions.
 `position`           | player's position                         |
 `result`             | outcome of the match (1 for 1 0 for loss) |
 `league`             | league tournament where it took place     |
-`vspm`               | visions core per minute                    |
+`vspm`               | vision score per minute                    |
 `visionscore`        | total vision score                        |
 `controlwardsbought` | amount of control wards bought            |
 `wardskilled`        | total wards killed                        |
 `wpm`                | wards placed per minute                   |
-`wardsplaced`        | wardsplaced                               |
+`wardsplaced`        | number of wards placed                               |
 `gamelength`         | length of the game (minutes)              |
-`pentakills`         | number of pentakills              |
+`pentakills`         | number of penta kills              |
 
 
 # Data Cleaning and EDA (Exploratory Data Analysis)
 
 ## Data Cleaning
 
-To clean and preprocess the data, my first step was to first identify missing values. I discovered that for the columns related to vision like `visionscore` and `vspm` had 12 missing values when the `datacompletness` was "partial" and when the specific game id was `8479-8479_game_1`. Given that this represents a very small subset of the data, I opted for listwise deletion to remove these rows before proceeding to the next steps.
+To clean and preprocess the data, my first step was to first identify missing values. I discovered that for the columns related to vision like `visionscore` and `vspm` had 12 missing values when the `datacompleteness"` was "partial" and when the specific game id was `8479-8479_game_1`. Given that this represents a very small subset of the data, I opted for listwise deletion to remove these rows before proceeding to the next steps.
 
 
 Next, I created a new column to assess vision efficiency by calculating the average team vision score per minute `vspm` for each `teamid`. Using this column, I then added a binary above mean column to indicate whether a team's vision score was above `1` or below `0` the mean.
@@ -209,7 +209,7 @@ This visualization provides valuable insight into the distribution of `vspm` (Vi
   frameborder="0"
 ></iframe>
 
-Building on the previous plot, this visulization shows us the `vspm` (Vision Score Per Minute) of all players, categorized by win or loss. We observe that players who win tend to higher higher `vspm`. Additionally, the shapes between this plot and the previous plot are similar which can indicate that for players with a `vspm` above they are more likly to win.
+Building on the previous plot, this visualization shows us the `vspm` (Vision Score Per Minute) of all players, categorized by win or loss. We observe that players who win tend to higher higher `vspm`. Additionally, the shapes between this plot and the previous plot are similar which can indicate that for players with a `vspm` above they are more likly to win.
 
 The table below represents an aggregate of the vspm (Vision Score Per Minute) z-score distributions for each position, categorized by whether the players win or lose:
 
@@ -219,14 +219,14 @@ The table below represents an aggregate of the vspm (Vision Score Per Minute) z-
 | Win      | -0.55555  | -0.385083 | -0.508304 | -0.443249 | 0.100207  |
 
 In order to generate this table, I created a pivot table with:
-- **Values:** `visonscore`
+- **Values:** `visionscore`
 - **Index:** `result` (Win/Loss)
 - **Columns:** `position` (top, jng, mid, bot, sup)
 - **Aggregation function:** Mean
 
-The pivot table reveals that the `visonscore` z-scores are generally higher for players who win compared to those who lose, across all positions, fortifying the previous asumptions. Notably:
-- Support players exhibit a positive `visonscore` z-score in both wins and losses, with a significant increase in wins.
-- The jungle role shows the largest improvement in `visonscore` from losses to wins.
+The pivot table reveals that the `visionscore` z-scores are generally higher for players who win compared to those who lose, across all positions, fortifying the previous assumptions. Notably:
+- Support players exhibit a positive `visionscore` z-score in both wins and losses, with a significant increase in wins.
+- The jungle role shows the largest improvement in `visionscore` from losses to wins.
 - Across all positions, winning players tend to achieve closer-to-average or above-average vision scores.
 
 # Assessment of Missingness
@@ -235,19 +235,19 @@ The pivot table reveals that the `visonscore` z-scores are generally higher for 
 
 I suspect that the missing values in the `ban5` column of our dataset are not missing at random (NMAR). The absence of values in this column does not appear to follow any identifiable pattern, suggesting that some teams may have either chosen not to ban a fifth champion or forgotten to do so. This implies that the missingness in ban5 depends on the actual value of the missing data itself, which is characteristic of NMAR missingness.
 
-## Missingness Dependecy
+## Missingness Dependency
 
 Looking throughout the dataset I was particularly interested in the column `pentakills`. I noticed that a lot of these values were missing, which lead me to decide to test the missingness dependency of this column.
 
 The first column I decided to test  missingness against was the `gamelength` column
 
-**Null Hypothesis**: Distribution of `'gamelength'` when `'pentakill'` is missing is the same as the distribution of `'gamelength'` when `'pentakill'` is not missing.
+**Null Hypothesis**: Distribution of `'gamelength'` when `'pentakills'` is missing is the same as the distribution of `'gamelength'` when `'pentakills'` is not missing.
 
-**Alternative Hypothesis**: Distribution of `'gamelength'` when `'pentakill'` is missing is not the same as the distribution of `'gamelength'` when `'pentakill'` is not missing.
+**Alternative Hypothesis**: Distribution of `'gamelength'` when `'pentakills'` is missing is not the same as the distribution of `'gamelength'` when `'pentakills'` is not missing.
 - Test statistic: Absolute Difference in Means
 - Significance level: 5% (0.05)
 
-We performed a permutation test to determine whether or not the missingness of `pentakill` was dependent on `gamelength` using Absolute Difference in Means as our test statistic. The plot below illustrates the empirical distribution of the Absolute Difference in means, where are observed value is the red vertical line.
+We performed a permutation test to determine whether or not the missingness of `pentakills` was dependent on `gamelength` using Absolute Difference in Means as our test statistic. The plot below illustrates the empirical distribution of the Absolute Difference in means, where are observed value is the red vertical line.
 
 **Results:**
 - **Observed**: 0.0
@@ -259,17 +259,17 @@ We performed a permutation test to determine whether or not the missingness of `
   frameborder="0"
 ></iframe>
 
-We calculated our p-value and then compared it against the observed Absolute Difference in Means through permutation testing, and the resulting p-value I got was 0. Since our p-value is less than our set significance level of 0.05, it leads us to **reject** the null hypothesis and therefore it is highly likely that the missingness in `pentakill` depends on `gamelangth`
+We calculated our p-value and then compared it against the observed Absolute Difference in Means through permutation testing, and the resulting p-value I got was 0. Since our p-value is less than our set significance level of 0.05, it leads us to **reject** the null hypothesis and therefore it is highly likely that the missingness in `pentakills` depends on `gamelength`
 
 The second column I chose to test missingness on `result`.
 
-**Null Hypothesis**: Distribution of `result` when `pentakill` is missing is the same as the distribution of `result` when `pentakill` is not missing.
+**Null Hypothesis**: Distribution of `result` when `pentakills` is missing is the same as the distribution of `result` when `pentakills` is not missing.
 
-**Alternative Hypothesis**: Distribution of `result` when `pentakill` is missing is not the same as the distribution of `result` when `pentakill` is not missing.
+**Alternative Hypothesis**: Distribution of `result` when `pentakills` is missing is not the same as the distribution of `result` when `pentakills` is not missing.
 - Test statistic: Total Variation Distance (TVD)
 - Significance level: 5% (0.05)
 
-We performed a permutation test to determine whether or not the missingness of `pentakill` was dependent on `result` total variation distance (TVD) as our test statistic. The plot below illustrates the empirical distribution of the TVDs, where are observed value is the red vertical line.
+We performed a permutation test to determine whether or not the missingness of `pentakills` was dependent on `result` total variation distance (TVD) as our test statistic. The plot below illustrates the empirical distribution of the TVDs, where are observed value is the red vertical line.
 
 **Results:**
 - **Observed**:0.0
@@ -281,7 +281,7 @@ We performed a permutation test to determine whether or not the missingness of `
   frameborder="0"
 ></iframe>
 
-By comparing the TVDs through permutation and the observed TVD I found that the resulting p-value was 1.0 which is greater than our significance level of 0.05. This means that we must **fail to reject** the null and conclude that the missingness in `pentakill` is most likely not dependent on `result`.
+By comparing the TVDs through permutation and the observed TVD I found that the resulting p-value was 1.0 which is greater than our significance level of 0.05. This means that we must **fail to reject** the null and conclude that the missingness in `pentakills` is most likely not dependent on `result`.
 
 
 
@@ -337,7 +337,7 @@ Predicting this score helps in understanding how effectively players use vision,
    - R² is used to evaluate how well the model explains the variance in the vision score. It represents the proportion of the variance in the vision score that is predictable from the post-game statistics. A higher R² value indicates a better model fit.
 
 3. **Mean Bias Error (MBE):**
-   - **Mean BiasE (MBE)** Measures the average difference between the predicted values and the true values. It helps identify if the model tends to over-predict or under-predict systematically. 
+   - **Mean Bias Error (MBE)** Measures the average difference between the predicted values and the true values. It helps identify if the model tends to over-predict or under-predict systematically. 
 
 **Why these metrics?**
 - RMSE is preferred because it provides a direct measure of prediction error, which is important for regression tasks.
@@ -351,7 +351,7 @@ For our baseline model, we used **Lasso regression** to predict the **vision sco
 
 - **Target Variable**: `visionscore` (the vision score of the player)
 - **Features**: 
-  - Numerical features: `gamelength`(Quatative, discrete), `wardsplaced`(Quantitive, nominal)
+  - Numerical features: `gamelength`(Quantitative, discrete), `wardsplaced`(Quantitative, nominal)
 
 ### Model Performance and Results
 - **Train R²**: 0.8136
@@ -388,7 +388,7 @@ The additional features were chosen based on their relevance to vision score, as
 - **`wpm` (wards per minute)**: This feature normalizes ward placement efficiency over the game duration, offering a standardized measure of the player's vision contributions.  
 - **`result` (outcome of the game)**: Previous analyses indicate that players on the winning team tend to have higher vision scores on average compared to those on the losing team.  
 
-By incorporating these features, the model captures imporant aspects of a player's vision-related performance, making the predictions more comprehensive and accurate.
+By incorporating these features, the model captures important aspects of a player's vision-related performance, making the predictions more comprehensive and accurate.
 
 The model was trained on the following dataset:
 
