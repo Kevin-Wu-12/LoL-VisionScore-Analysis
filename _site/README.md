@@ -198,7 +198,7 @@ To delve deeper into the distribution of vspm (Vision Score Per Minute) and its 
 This visualization provides valuable insight into the distribution of `vspm` (Vision Score Per Minute)  among players, highlighting differences in performance relative to the mean. The histogram reveals that there are noticeably more players with a vision score above the mean compared to those below, suggesting a skewed distribution favoring higher performance in vision-related metrics.
 
 <iframe
-  src="assets/all.html"
+  src="assets/all_mean.html"
   width="700"
   height="500"
   frameborder="0"
@@ -426,6 +426,13 @@ For our fairness analysis, we chose RMSE as our evaluation metric, with the test
 
 - **Observed RMSE Difference**: -2.4441
 - **P-value**: 1.0000
+
+<iframe
+  src="assets/fairness.html"
+  width="750"
+  height="500"
+  frameborder="0"
+></iframe>
 
 ### **Conclusion**
 Based on the resulting p-value of 1.00 being greater than our significance level of 0.05, we fail to reject the null hypothesis. We do not have enough evidence to conclude that our model is unfair and that its RMSE for the jungle position is lower than its RMSE for the support position. Our conclusion indicates that the model appears fair, and any observed differences in RMSE are likely due to random chance.

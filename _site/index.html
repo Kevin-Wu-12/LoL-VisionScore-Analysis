@@ -252,7 +252,7 @@ The first few rows of the combined dataframe are down below:</p>
 
 <p>This visualization provides valuable insight into the distribution of <code class="language-plaintext highlighter-rouge">vspm</code> (Vision Score Per Minute)  among players, highlighting differences in performance relative to the mean. The histogram reveals that there are noticeably more players with a vision score above the mean compared to those below, suggesting a skewed distribution favoring higher performance in vision-related metrics.</p>
 
-<iframe src="assets/all.html" width="700" height="500" frameborder="0"></iframe>
+<iframe src="assets/all_mean.html" width="700" height="500" frameborder="0"></iframe>
 
 <p>Building on the previous plot, this visulization shows us the <code class="language-plaintext highlighter-rouge">vspm</code> (Vision Score Per Minute) of all players, categorized by win or loss. We observe that players who win tend to higher higher <code class="language-plaintext highlighter-rouge">vspm</code>. Additionally, the shapes between this plot and the previous plot are similar which can indicate that for players with a <code class="language-plaintext highlighter-rouge">vspm</code> above they are more likly to win.</p>
 
@@ -548,6 +548,8 @@ The first few rows of the combined dataframe are down below:</p>
   <li><strong>Observed RMSE Difference</strong>: -2.4441</li>
   <li><strong>P-value</strong>: 1.0000</li>
 </ul>
+
+<iframe src="assets/fairness.html" width="750" height="500" frameborder="0"></iframe>
 
 <h3 id="conclusion-2"><strong>Conclusion</strong></h3>
 <p>Based on the resulting p-value of 1.00 being greater than our significance level of 0.05, we fail to reject the null hypothesis. We do not have enough evidence to conclude that our model is unfair and that its RMSE for the jungle position is lower than its RMSE for the support position. Our conclusion indicates that the model appears fair, and any observed differences in RMSE are likely due to random chance.</p>
