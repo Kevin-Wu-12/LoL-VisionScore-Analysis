@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>LoL-VisionScore-Analysis | This repository contains the implementation and analysis of a project conducted at UC San Diego. The focus of this project is on investigating the relationship between vision score statistics and team success in League of Legends matches.</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="LoL-VisionScore-Analysis" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This repository contains the implementation and analysis of a project conducted at UC San Diego. The focus of this project is on investigating the relationship between vision score statistics and team success in League of Legends matches." />
+<meta property="og:description" content="This repository contains the implementation and analysis of a project conducted at UC San Diego. The focus of this project is on investigating the relationship between vision score statistics and team success in League of Legends matches." />
+<link rel="canonical" href="http://localhost:4000/" />
+<meta property="og:url" content="http://localhost:4000/" />
+<meta property="og:site_name" content="LoL-VisionScore-Analysis" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="LoL-VisionScore-Analysis" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"This repository contains the implementation and analysis of a project conducted at UC San Diego. The focus of this project is on investigating the relationship between vision score statistics and team success in League of Legends matches.","headline":"LoL-VisionScore-Analysis","name":"LoL-VisionScore-Analysis","url":"http://localhost:4000/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="LoL-VisionScore-Analysis" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">LoL-VisionScore-Analysis</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <div class="home"><h1 class="custom-title">An Overlooked Metric: How Vision Score Impacts Winning in League of Legends</h1>
+
+<p>A UCSD DSC80 project focused on analyzing the impact of vision score in League of Legends</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Welcome to the world of Vision Score! League of Legends (LOL) is a massively popular online multiply multiplayer online battle game (MOBA) with millions of players across the globe. With so many players actively playing the game League of Legends provides us Data Scientists with a treasure trove of data for us to work with and to engineer and analyze many difference dynamics of the game.</p>
+
+<p>League of Legends is a highly competitive game, where players naturally strive to secure victory. In each game, two teams of five players face off, aiming to destroy the opposing team’s central base, known as the Nexus.This brings us to the question, what is the most effective strategy to achieve this goal? League of Legends isn’t just about racking up kills—victory often hinges on less obvious factors like Vision Score. This crucial yet often overlooked metric helps teams gather vital map information, making it easier to track enemy movements and objectives, which is essential for strategic gameplay. That said, how crucial is Vision Score when it comes to securing victory? <strong>To answer this question, I conducted a detailed data analysis to uncover the impact of Vision Score across different roles and its significance in shaping the outcome of a match.</strong></p>
+
+<p>For my analysis, I used the 2022 League of Legends Esports Stats dataset from Oracle’s Elixir, a platform offering many different advanced statistics for the game. This dataset includes detailed performance data from thousands of professional matches across various tournaments, providing insights into players, teams, and outcomes.</p>
+
+<h1 id="introduction-of-dataset-and-columns">Introduction of Dataset and Columns</h1>
+
+<p>Our original dataset contained <strong>150,180 rows</strong> and <strong>161 columns</strong>, however I cleaned the dataset to only include relevant information that is needed for our analysis. The resulting data frame consists of <strong>150,168 rows</strong> and <strong>13 columns</strong>
+The table below shows the columns and their definitions.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Column Name</th>
+      <th style="text-align: left">Definition</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">gameid</code></td>
+      <td style="text-align: left">game ID</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">position</code></td>
+      <td style="text-align: left">player’s position</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">result</code></td>
+      <td style="text-align: left">outcome of the match (1 for 1 0 for loss)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">league</code></td>
+      <td style="text-align: left">league tournament where it took place</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">vspm</code></td>
+      <td style="text-align: left">visions core per minute</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">visionscore</code></td>
+      <td style="text-align: left">total vision score</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">controlwardsbought</code></td>
+      <td style="text-align: left">amount of control wards bought</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">wardskilled</code></td>
+      <td style="text-align: left">total wards killed</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">wpm</code></td>
+      <td style="text-align: left">wards placed per minute</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">wardsplaced</code></td>
+      <td style="text-align: left">wardsplaced</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">gamelength</code></td>
+      <td style="text-align: left">length of the game (minutes)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">pentakills</code></td>
+      <td style="text-align: left">number of pentakills</td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="data-cleaning-and-eda-exploratory-data-analysis">Data Cleaning and EDA (Exploratory Data Analysis)</h1>
+
+<h2 id="data-cleaning">Data Cleaning</h2>
+
+<p>To clean and preprocess the data, my first step was to first identify missing values in the data. I discovered that for the columns related to vision like <code class="language-plaintext highlighter-rouge">visionscore</code> and <code class="language-plaintext highlighter-rouge">vspm</code> had 12 missing values when the <code class="language-plaintext highlighter-rouge">datacompletness</code> was “partial” and when the specific game id was <code class="language-plaintext highlighter-rouge">8479-8479_game_1</code>. Given that this represents a very small subset of the data, I opted for listwise deletion to remove these rows before proceeding to the next steps.</p>
+
+<p>Next, I created a new column to assess vision efficiency by calculating the average team vision score per minute <code class="language-plaintext highlighter-rouge">vspm</code> for each <code class="language-plaintext highlighter-rouge">teamid</code>. Using this column, I then added a binary above mean column to indicate whether a team’s vision score was above <code class="language-plaintext highlighter-rouge">1</code> or below <code class="language-plaintext highlighter-rouge">0</code> the mean.</p>
+
+<p>I then standardized all numerical columns using a custom helper function with StandardScaler to ensure the data was properly scaled for analysis.</p>
+
+<p>After completing the data cleaning process, I divided the main dataset into two subsets: one containing team-level data (when <code class="language-plaintext highlighter-rouge">position == team</code>) and the other containing player-level data (<code class="language-plaintext highlighter-rouge">position != team</code>).
+The first few rows of the combined dataframe are down below:</p>
+<div style="overflow-x: auto; max-width: 100%;">
+  <table>
+    <thead>
+      <tr>
+        <th>gameid</th>
+        <th>datacompleteness</th>
+        <th>position</th>
+        <th>result</th>
+        <th>league</th>
+        <th>vspm</th>
+        <th>visionscore</th>
+        <th>controlwardsbought</th>
+        <th>wardskilled</th>
+        <th>wpm</th>
+        <th>wardsplaced</th>
+        <th>gamelength</th>
+        <th>above_mean</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>ESPORTSTMNT01_2690210</td>
+        <td>complete</td>
+        <td>top</td>
+        <td>Loss</td>
+        <td>LCKC</td>
+        <td>-0.635957</td>
+        <td>-0.641883</td>
+        <td>-0.563322</td>
+        <td>-0.542525</td>
+        <td>-0.708221</td>
+        <td>-0.698117</td>
+        <td>-0.53657</td>
+        <td>-1.05895</td>
+      </tr>
+      <tr>
+        <td>ESPORTSTMNT01_2690210</td>
+        <td>complete</td>
+        <td>jng</td>
+        <td>Loss</td>
+        <td>LCKC</td>
+        <td>-0.29221</td>
+        <td>-0.35334</td>
+        <td>-0.487438</td>
+        <td>0.219722</td>
+        <td>-0.775999</td>
+        <td>-0.75545</td>
+        <td>-0.53657</td>
+        <td>-1.05895</td>
+      </tr>
+      <tr>
+        <td>ESPORTSTMNT01_2690210</td>
+        <td>complete</td>
+        <td>mid</td>
+        <td>Loss</td>
+        <td>LCKC</td>
+        <td>-0.589075</td>
+        <td>-0.602536</td>
+        <td>-0.411555</td>
+        <td>-0.479004</td>
+        <td>-0.335154</td>
+        <td>-0.382781</td>
+        <td>-0.53657</td>
+        <td>-1.05895</td>
+      </tr>
+      <tr>
+        <td>ESPORTSTMNT01_2690210</td>
+        <td>complete</td>
+        <td>bot</td>
+        <td>Loss</td>
+        <td>LCKC</td>
+        <td>-0.65157</td>
+        <td>-0.654999</td>
+        <td>-0.639205</td>
+        <td>-0.542525</td>
+        <td>-0.572569</td>
+        <td>-0.583449</td>
+        <td>-0.53657</td>
+        <td>-1.05895</td>
+      </tr>
+      <tr>
+        <td>ESPORTSTMNT01_2690210</td>
+        <td>complete</td>
+        <td>sup</td>
+        <td>Loss</td>
+        <td>LCKC</td>
+        <td>0.0358807</td>
+        <td>-0.0779132</td>
+        <td>-0.108022</td>
+        <td>-0.03436</td>
+        <td>0.00402423</td>
+        <td>-0.0961115</td>
+        <td>-0.53657</td>
+        <td>-1.05895</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="univariate-analysis">Univariate Analysis</h2>
+<p>“For our univariate analysis, I focused on the vision score distributions of <code class="language-plaintext highlighter-rouge">vspm</code> (Vision Score Per Minute) for junglers and the entire team. To create these plots, I first filtered the data for jungle-specific and team-wide entries in the <code class="language-plaintext highlighter-rouge">position</code> column, then extracted the vspm column for analysis.”</p>
+
+<iframe src="assets/VSPM_JNG.html" width="750" height="500" frameborder="0"></iframe>
+
+<iframe src="assets/VSPM_ALL.html" width="750" height="500" frameborder="0"></iframe>
+
+<p>The histograms for all roles reveal a distinct right-skewed distribution, which aligns with domain knowledge from League of Legends. This skewness can be attributed to the responsibilities and playstyles associated with specific roles. Roles such as jungle and support, for instance, place a higher emphasis on <strong>map control</strong> and <strong>vision management</strong>, as these are critical to their team’s strategic success which contributes to their higher vision stats.</p>
+
+<h2 id="bivariate-analysis">Bivariate Analysis</h2>
+
+<p>In this section, I consolidated the average z-scores for all positions into a single bar graph to facilitate easier comparisons across roles. Additionally, I created overlay histograms to provide a deeper analysis of the underlying distributions, enabling a more comprehensive understanding of how each role’s performance metrics vary.</p>
+
+<iframe src="assets/mean_z.html" width="750" height="500" frameborder="0"></iframe>
+
+<p>The bar graph above displays the average z-scores for each position across key vision-related metrics, including <code class="language-plaintext highlighter-rouge">vision score per minute</code> (vspm), <code class="language-plaintext highlighter-rouge">wards placed per minute</code> (wpm), <code class="language-plaintext highlighter-rouge">wards killed</code>, and <code class="language-plaintext highlighter-rouge">controlwardsbought</code>. The x-axis represents the positions, and the y-axis indicates the average z-scores.</p>
+
+<p>From the visualization, we can see that the support role consistently exhibits the highest average z-scores, particularly excelling in metrics like <code class="language-plaintext highlighter-rouge">wpm</code>, highlighting its critical role in map control and team vision. In contrast, top lane and mid lane show the lowest average z-scores across these metrics, reflecting their focus on individual lane control and resource accumulation rather than team-oriented vision contributions.</p>
+
+<p>Junglers, however, fall somewhere in the middle, as maintaining awareness of the enemy jungler’s location is crucial for their role. Notably we cab see that the mean z-score for wards killed for junglers is higher than for supports which is attributed to the fact that their role in traversing the whole map multiple times throughout the game. This wider coverage of the map naturally leads to more opportunities for destroying enemy wards. This side-by-side comparison provides a clear understanding of how each role contributes to vision-based objectives in League of Legends.</p>
+
+<h2 id="interesting-aggregates">Interesting Aggregates</h2>
+
+<p>To delve deeper into the distribution of vspm (Vision Score Per Minute) and its relationship with player performance, we plotted overlaid histograms of all players’ vspm values and a piviot table representing average z-score of <code class="language-plaintext highlighter-rouge">vspm</code> of all positions that win or lose.</p>
+
+<iframe src="assets/all_mean.html" width="700" height="500" frameborder="0"></iframe>
+
+<p>This visualization provides valuable insight into the distribution of <code class="language-plaintext highlighter-rouge">vspm</code> (Vision Score Per Minute)  among players, highlighting differences in performance relative to the mean. The histogram reveals that there are noticeably more players with a vision score above the mean compared to those below, suggesting a skewed distribution favoring higher performance in vision-related metrics.</p>
+
+<iframe src="assets/all.html" width="700" height="500" frameborder="0"></iframe>
+
+<p>Building on the previous plot, this visulization shows us the <code class="language-plaintext highlighter-rouge">vspm</code> (Vision Score Per Minute) of all players, categorized by win or loss. We observe that players who win tend to higher higher <code class="language-plaintext highlighter-rouge">vspm</code>. Additionally, the shapes between this plot and the previous plot are similar which can indicate that for players with a <code class="language-plaintext highlighter-rouge">vspm</code> above they are more likly to win.</p>
+
+<p>The table below represents an aggregate of the vspm (Vision Score Per Minute) z-score distributions for each position, categorized by whether the players win or lose:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">result</th>
+      <th style="text-align: right">top</th>
+      <th style="text-align: right">jng</th>
+      <th style="text-align: right">mid</th>
+      <th style="text-align: right">bot</th>
+      <th style="text-align: right">sup</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Loss</td>
+      <td style="text-align: right">-0.600672</td>
+      <td style="text-align: right">-0.450003</td>
+      <td style="text-align: right">-0.571546</td>
+      <td style="text-align: right">-0.529343</td>
+      <td style="text-align: right">0.0119695</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Win</td>
+      <td style="text-align: right">-0.55555</td>
+      <td style="text-align: right">-0.385083</td>
+      <td style="text-align: right">-0.508304</td>
+      <td style="text-align: right">-0.443249</td>
+      <td style="text-align: right">0.100207</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>In order to generate this table, I created a pivot table with:</p>
+<ul>
+  <li><strong>Values:</strong> <code class="language-plaintext highlighter-rouge">visonscore</code></li>
+  <li><strong>Index:</strong> <code class="language-plaintext highlighter-rouge">result</code> (Win/Loss)</li>
+  <li><strong>Columns:</strong> <code class="language-plaintext highlighter-rouge">position</code> (top, jng, mid, bot, sup)</li>
+  <li><strong>Aggregation function:</strong> Mean</li>
+</ul>
+
+<p>The pivot table reveals that the <code class="language-plaintext highlighter-rouge">visonscore</code> z-scores are generally higher for players who win compared to those who lose, across all positions, fortifying the previous asumptions. Notably:</p>
+<ul>
+  <li>Support players exhibit a positive <code class="language-plaintext highlighter-rouge">visonscore</code> z-score in both wins and losses, with a significant increase in wins.</li>
+  <li>The jungle role shows the largest improvement in <code class="language-plaintext highlighter-rouge">visonscore</code> from losses to wins.</li>
+  <li>Across all positions, winning players tend to achieve closer-to-average or above-average vision scores.</li>
+</ul>
+
+<h1 id="assessment-of-missingness">Assessment of Missingness</h1>
+
+<h2 id="nmar-analysis">NMAR Analysis</h2>
+
+<p>I suspect that the missing values in the <code class="language-plaintext highlighter-rouge">ban5</code> column of our dataset are not missing at random (NMAR). The absence of values in this column does not appear to follow any identifiable pattern, suggesting that some teams may have either chosen not to ban a fifth champion or forgotten to do so. This implies that the missingness in ban5 depends on the actual value of the missing data itself, which is characteristic of NMAR missingness.</p>
+
+<h2 id="missingness-dependecy">Missingness Dependecy</h2>
+
+<p>Looking throughout the dataset I was particuarally intered in the column <code class="language-plaintext highlighter-rouge">pentakills</code>. I noticed that a lot of these values were missing, which lead me to decide to test the missingness dependecy of this column.</p>
+
+<p>The first column I decided to test  missingness aginast was the <code class="language-plaintext highlighter-rouge">gamelength</code> column</p>
+
+<p><strong>Null Hypothesis</strong>: Distribution of <code class="language-plaintext highlighter-rouge">'gamelength'</code> when <code class="language-plaintext highlighter-rouge">'pentakill'</code> is missing is the same as the distribution of <code class="language-plaintext highlighter-rouge">'gamelength'</code> when <code class="language-plaintext highlighter-rouge">'pentakill'</code> is not missing.</p>
+
+<p><strong>Alternative Hypothesis</strong>: Distribution of <code class="language-plaintext highlighter-rouge">'gamelength'</code> when <code class="language-plaintext highlighter-rouge">'pentakill'</code> is missing is not the same as the distribution of <code class="language-plaintext highlighter-rouge">'gamelength'</code> when <code class="language-plaintext highlighter-rouge">'pentakill'</code> is not missing.</p>
+<ul>
+  <li>Test statistic: Absolute Difference in Means</li>
+  <li>Significance level: 5% (0.05)</li>
+</ul>
+
+<p>We performed a permutation test to determine whether or not the missingness of <code class="language-plaintext highlighter-rouge">pentakill</code> was dependent on <code class="language-plaintext highlighter-rouge">gamelength</code> using Aboslute Difference in Means as our test statistic. The plot below illustrates the empircal distirbution of the Absolute Difference in means, where are observed value is the red vertical line.</p>
+
+<p><strong>Results:</strong></p>
+<ul>
+  <li><strong>Observed</strong>: 0.0</li>
+  <li><strong>P-value</strong>: 0.0</li>
+</ul>
+<iframe src="assets/missing_reject.html" width="700" height="500" frameborder="0"></iframe>
+
+<p>We caluclaed our p-value and then compared it agianst the observed Absolute Difference in Means through permuation testing, and the resulting p-value I got was 0. Since our p-value is less than our set significance level of 0.05, it leads us to <strong>reject</strong> the null hypothesis and therefore it is highly likely that the missingness in <code class="language-plaintext highlighter-rouge">pentakill</code> depends on <code class="language-plaintext highlighter-rouge">gamelangth</code></p>
+
+<p>The second column I chose to test missingness on <code class="language-plaintext highlighter-rouge">result</code>.</p>
+
+<p><strong>Null Hypothesis</strong>: Distribution of <code class="language-plaintext highlighter-rouge">result</code> when <code class="language-plaintext highlighter-rouge">pentakill</code> is missing is the same as the distribution of <code class="language-plaintext highlighter-rouge">result</code> when <code class="language-plaintext highlighter-rouge">pentakill</code> is not missing.</p>
+
+<p><strong>Alternative Hypothesis</strong>: Distribution of <code class="language-plaintext highlighter-rouge">result</code> when <code class="language-plaintext highlighter-rouge">pentakill</code> is missing is not the same as the distribution of <code class="language-plaintext highlighter-rouge">result</code> when <code class="language-plaintext highlighter-rouge">pentakill</code> is not missing.</p>
+<ul>
+  <li>Test statistic: Total Variation Distance (TVD)</li>
+  <li>Significance level: 5% (0.05)</li>
+</ul>
+
+<p>We performed a permutation test to determine whether or not the missingness of <code class="language-plaintext highlighter-rouge">pentakill</code> was dependent on <code class="language-plaintext highlighter-rouge">result</code> total variation distance (TVD) as our test statistic. The plot below illustrates the empircal distirbution of the TVDs, where are observed value is the red vertical line.</p>
+
+<p><strong>Results:</strong></p>
+<ul>
+  <li><strong>Observed</strong>:0.0</li>
+  <li><strong>P-value</strong>: 1.0</li>
+</ul>
+<iframe src="assets/missing_fail_reject.html" width="700" height="500" frameborder="0"></iframe>
+
+<p>By comparing the TVDs through permuatation and the observed TVD I found that the resulting p-value was 1.0 which is greater than our significance level of 0.05. This means that we must <strong>fail to reject</strong> the null and conclude that the missingness in <code class="language-plaintext highlighter-rouge">pentakill</code> is most likely not dependent on <code class="language-plaintext highlighter-rouge">result</code></p>
+
+<h2 id="hypothesis-testing">Hypothesis Testing</h2>
+
+<p>After conducting our exploratory data analysis, we chose to answer the general question: Is there a statistically significant association between the vspm values and the result column in the dataset?</p>
+
+<p><strong>Null Hypothesis</strong>: The vision score per minute distributions on winning and losing teams are not significantly different.</p>
+
+<p><strong>Alternative Hypothesis</strong>: The vision score per minute (vspm) distributions for winning and losing teams are significantly different.</p>
+
+<ul>
+  <li>Test statistic: Difference in Means</li>
+  <li>Significance level: 5% (0.05)</li>
+</ul>
+
+<p>We used the difference in means as our test statistic for this test because we are comparing the average vision score per minute (vspm) between winning and losing teams. This test is suitable for continuous variables like <code class="language-plaintext highlighter-rouge">vspm</code>. We chose the most commonly used significance level, 5% (0.05), to determine statistical significance. A p-value less than 0.05 would indicate strong evidence against the null hypothesis, meaning there is less than a 5% probability of observing a difference as or more extreme than the observed result by chance.</p>
+
+<p>Below is the resulting histogram representing the distribution of our test statistic during our permutation test.</p>
+
+<p><strong>Results:</strong></p>
+<ul>
+  <li><strong>Observed</strong>:0.079</li>
+  <li><strong>P-value</strong>: 0.0</li>
+</ul>
+<iframe src="assets/hypothesis_test.html" width="700" height="500" frameborder="0"></iframe>
+
+<p>Based on the permutation test with a p-value of 0.0, we <strong>reject</strong> the null hypothesis. This suggests that the distribution of vspm between winning and losing teams is significantly different, leading us to conclude that winning/losing has an impact on vspm.</p>
+
+<h1 id="framing-a-prediction-problem">Framing a Prediction Problem</h1>
+
+<h2 id="prediction-problem-can-we-predict-the-vision-scores-of-a-player-based-on-post-game-statistics">Prediction Problem: Can we predict the vision scores of a player based on post-game statistics?</h2>
+
+<p><strong>Problem Type:</strong> Regression</p>
+
+<p>The task is to predict the <strong>vision scores</strong> of a player based on their post-game statistics. Since the vision score is a continuous numerical value, this is a <strong>regression problem</strong>.</p>
+
+<h3 id="response-variable">Response Variable</h3>
+
+<ul>
+  <li><strong>Variable:</strong> Vision Score</li>
+  <li><strong>Reason for Choice:</strong> The vision score represents a player’s ability to perceive and manage the game environment, which is a crucial performance metric in <strong>League of Legends</strong>. Predicting this score helps in understanding how effectively players use vision, an important skill for strategic gameplay.</li>
+</ul>
+
+<h3 id="evaluation-metrics">Evaluation Metrics</h3>
+
+<ol>
+  <li><strong>Root Mean Squared Error (RMSE):</strong>
+    <ul>
+      <li>RMSE is chosen as a metric because it provides an interpretable measure of the model’s prediction error in the same units as the vision score. A lower RMSE indicates better model performance.</li>
+    </ul>
+  </li>
+  <li><strong>R-squared (R²) Score:</strong>
+    <ul>
+      <li>R² is used to evaluate how well the model explains the variance in the vision score. It represents the proportion of the variance in the vision score that is predictable from the post-game statistics. A higher R² value indicates a better model fit.</li>
+    </ul>
+  </li>
+  <li><strong>Mean Bias Error (MBE):</strong>
+    <ul>
+      <li><strong>Mean BiasE (MBE)</strong> Measures the average difference between the predicted values and the true values. It helps identify if the model tends to over-predict or under-predict systematically.</li>
+    </ul>
+  </li>
+</ol>
+
+<p><strong>Why these metrics?</strong></p>
+<ul>
+  <li>RMSE is preferred because it provides a direct measure of prediction error, which is important for regression tasks.</li>
+  <li>R² is useful for measuring how well the model is fit.</li>
+  <li>MB helps measures over-prediction or under-prediction and shows whether there is bias in your predictions.</li>
+  <li>Metrics like <strong>Accuracy</strong> and <strong>F1 Score</strong> is not suitable in this case because it is a classification metric, which is not applicable to regression problems.</li>
+</ul>
+
+<h1 id="baseline-model">Baseline Model</h1>
+
+<p>For our baseline model, we used <strong>Lasso regression</strong> to predict the <strong>vision score</strong> of a player. The model was trained on the following dataset:</p>
+
+<ul>
+  <li><strong>Target Variable</strong>: <code class="language-plaintext highlighter-rouge">visionscore</code> (the vision score of the player)</li>
+  <li><strong>Features</strong>:
+    <ul>
+      <li>Numerical features: <code class="language-plaintext highlighter-rouge">gamelength</code>(Quatative, discrete), <code class="language-plaintext highlighter-rouge">wardsplaced</code>(Quantitive, nominal)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="model-performance-and-results">Model Performance and Results</h3>
+<ul>
+  <li><strong>Train R²</strong>: 0.8174</li>
+  <li><strong>Test R²</strong>: 0.8162</li>
+  <li><strong>RMSE</strong>: 0.1445</li>
+  <li><strong>MBE</strong>: -0.0022</li>
+</ul>
+
+<h3 id="model-interpretation">Model Interpretation</h3>
+
+<ul>
+  <li>
+    <p>The <strong>R² score</strong> for both the <strong>training</strong> and <strong>test</strong> sets is quite high (around 0.816), although there is still room for improvement</p>
+  </li>
+  <li>
+    <p>The <strong>RMSE</strong> of <strong>0.1445</strong> shows that the model’s predictions are relatively close to the actual values, with an average error of 0.1445 units.</p>
+  </li>
+  <li>
+    <p>The <strong>MBE</strong> of <strong>-0.0022</strong> suggests that the model has very minimal bias, indicating that the predictions are well-calibrated with no significant over- or under-prediction.</p>
+    <h2 id="conclusion"><strong>Conclusion</strong></h2>
+    <p>This baseline Lasso regression model demonstrates strong performance in predicting vision scores, with high R², low RMSE, and minimal bias. While these results are promising, the model can still be improved by exploring additional features or optimizing hyperparameters</p>
+  </li>
+</ul>
+
+<h1 id="final-model">Final Model</h1>
+
+<p>For our final model, we refined the previous Lasso regression model by including additional features and optimizing the hyperparameter <strong>alpha</strong> using <strong>cross-validation</strong>. The relevant features were expanded to include:</p>
+
+<ul>
+  <li><strong>Features Added</strong>:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">controlwardsbought</code>: Quantitative, discrete</li>
+      <li><code class="language-plaintext highlighter-rouge">wardskilled</code>: Quantitative, discrete</li>
+      <li><code class="language-plaintext highlighter-rouge">wpm</code> (wards per minute): Quantitative, continuous</li>
+      <li><code class="language-plaintext highlighter-rouge">result</code> (outcome of the game): Categorical, nominal</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="rationale-for-feature-selection"><strong>Rationale for Feature Selection</strong></h2>
+
+<p>The additional features were chosen based on their relevance to vision score, as these variables are directly tied to a player’s contribution to vision control and strategy during the game:</p>
+
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">controlwardsbought</code> and <code class="language-plaintext highlighter-rouge">wardskilled</code></strong>: These metrics capture a player’s active participation in vision control by buying control wards and destroying wards, which are critical for improving the vision score.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">wpm</code> (wards per minute)</strong>: This feature accounts for the efficiency of ward placement over the game duration which gives us normalized measure of vision contribution.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">result</code> (outcome of the game)</strong>: From previous analysis, players who win have a higher vision score on average compared to those who lose.</li>
+</ul>
+
+<p>By incorporating these features, the model captures imporant aspects of a player’s vision-related performance, making the predictions more comprehensive and accurate.</p>
+
+<p>The model was trained on the following dataset:</p>
+
+<ul>
+  <li><strong>Target Variable</strong>: <code class="language-plaintext highlighter-rouge">visionscore</code> (the vision score of the player)</li>
+  <li><strong>Features</strong>:
+    <ul>
+      <li>Numerical features: <code class="language-plaintext highlighter-rouge">gamelength</code>, <code class="language-plaintext highlighter-rouge">wardsplaced</code>, <code class="language-plaintext highlighter-rouge">wardskilled</code>, <code class="language-plaintext highlighter-rouge">controlwardsbought</code>, <code class="language-plaintext highlighter-rouge">wpm</code></li>
+      <li>Categorical features: <code class="language-plaintext highlighter-rouge">result</code>, <code class="language-plaintext highlighter-rouge">position</code></li>
+    </ul>
+  </li>
+</ul>
+
+<p>We applied <strong>one-hot encoding</strong> to the categorical features and used <strong>Lasso regression</strong> with cross-validation to determine the optimal alpha parameter.</p>
+
+<h3 id="model-performance-and-results-1">Model Performance and Results</h3>
+
+<ul>
+  <li><strong>Best Alpha</strong>: 0.0002</li>
+  <li><strong>Train R²</strong>: 0.9315</li>
+  <li><strong>Test R²</strong>: 0.9309</li>
+  <li><strong>RMSE</strong>: 0.0886</li>
+  <li><strong>MBE</strong>: -0.0022</li>
+</ul>
+
+<h3 id="model-interpretation-1">Model Interpretation</h3>
+
+<ul>
+  <li>
+    <p><strong>R² Scores</strong>: Both the <strong>training</strong> and <strong>test</strong> R² scores are very high (around 0.931), indicating that the model explains a significant proportion of the variance in the vision score predictions. This represents a <strong>substantial improvement</strong> over the baseline model.</p>
+  </li>
+  <li>
+    <p><strong>RMSE</strong>: The <strong>RMSE</strong> of <strong>0.0886</strong> shows that the model’s predictions are very close to the actual values, with an average error of only 0.0886 units, reflecting a high level of accuracy.</p>
+  </li>
+  <li>
+    <p><strong>Mean Bias Error (MBE)</strong>: The <strong>MBE of -0.0022</strong> indicates that the model is essentially unbiased, with very minimal deviation from the actual values in terms of prediction.</p>
+  </li>
+</ul>
+
+<h2 id="conclusion-1"><strong>Conclusion</strong></h2>
+
+<p>The final Lasso regression model significantly improves upon the baseline model. The high <strong>R² scores</strong>, low <strong>RMSE</strong>, and minimal <strong>MBE</strong> suggest that the model is highly effective in predicting the vision score based on game-related statistics and features. The incorporation of additional features like <code class="language-plaintext highlighter-rouge">controlwardsbought</code>, <code class="language-plaintext highlighter-rouge">wardskilled</code>, and <code class="language-plaintext highlighter-rouge">wpm</code> helped improve model accuracy, and the hyperparameter tuning using cross-validation led to better generalization.</p>
+
+<p>This model represents a robust predictive tool for estimating a player’s vision score and can be further improved by exploring additional features or refining the model further.</p>
+
+<h1 id="fairness-analysis">Fairness Analysis</h1>
+
+<p>Fairness analysis refers to the process of assessing whether a predictive model is biased or not against certain groups in a population. To evaluate the fairness of our final model, we assigned Group X to represent players in the <code class="language-plaintext highlighter-rouge">jungle</code> position and Group Y to represent players in the <code class="language-plaintext highlighter-rouge">support</code> position. We set up a null and alternative hypothesis to explore the possibility of bias:</p>
+
+<ul>
+  <li><strong>Null hypothesis</strong>: Our model is fair. The RMSE for the jungle position is roughly the same as the RMSE for the support position, and any differences are due to random chance.</li>
+  <li><strong>Alternative hypothesis</strong>: Our model is unfair (biased). The RMSE for the jungle position is lower than the RMSE for the support position.</li>
+</ul>
+
+<p>For our fairness analysis, we chose RMSE as our evaluation metric, with the test statistic being the difference in RMSE between jungle and support predictions. Our significance level was set at 0.05, and after running 1,000 permutation tests, we got the following results:</p>
+
+<ul>
+  <li><strong>Observed RMSE Difference</strong>: -2.4441</li>
+  <li><strong>P-value</strong>: 1.0000</li>
+</ul>
+
+<h3 id="conclusion-2"><strong>Conclusion</strong></h3>
+<p>Based on the resulting p-value of 1.0000 being greater than our significance level of 0.05, we fail to reject the null hypothesis. We do not have enough evidence to conclude that our model is unfair and that its RMSE for the jungle position is lower than its RMSE for the support position. Our conclusion indicates that the model appears fair, and any observed differences in RMSE are likely due to random chance.</p>
+
+</div>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">LoL-VisionScore-Analysis</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">LoL-VisionScore-Analysis</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>This repository contains the implementation and analysis of a project conducted at UC San Diego. The focus of this project is on investigating the relationship between vision score statistics and team success in League of Legends matches.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
