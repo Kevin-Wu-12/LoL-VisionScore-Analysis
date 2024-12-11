@@ -248,7 +248,7 @@ We performed a permutation test to determine whether or not the missingness of `
 - **Observed**: 0.0
 - **P-value**: 0.0
 <iframe
-  src="assets/missing_reject.html"
+  src="assets/missing_reject1.html"
   width="700"
   height="500"
   frameborder="0"
@@ -270,7 +270,7 @@ We performed a permutation test to determine whether or not the missingness of `
 - **Observed**:0.0
 - **P-value**: 1.0
 <iframe
-  src="assets/missing_fail_reject.html"
+  src="assets/missing_fail_reject1.html"
   width="700"
   height="500"
   frameborder="0"
