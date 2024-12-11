@@ -404,7 +404,7 @@ We applied **one-hot encoding** to the categorical features and used **Lasso reg
 - **RMSE**: 0.0886
 - **MBE**: -0.0022
 
-# Residual Plot
+## Residual Plot
 Below is the residual plot:
 
 <iframe
