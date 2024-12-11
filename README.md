@@ -348,14 +348,14 @@ For our baseline model, we used **Lasso regression** to predict the **vision sco
   - Numerical features: `gamelength`(Quatative, discrete), `wardsplaced`(Quantitive, nominal)
 
 ### Model Performance and Results
-- **Train R²**: 0.8174
-- **Test R²**: 0.8162
-- **RMSE**: 0.1445
+- **Train R²**: 0.8136
+- **Test R²**: 0.8122
+- **RMSE**: 0.1461
 - **MBE**: -0.0022
 
 ### Model Interpretation
 
-- The **R² score** for both the **training** and **test** sets is quite high (around 0.816), although there is still room for improvement
+- The **R² score** for both the **training** and **test** sets is quite high (around 0.8136), although there is still room for improvement
   
 - The **RMSE** of **0.1445** shows that the model’s predictions are relatively close to the actual values, with an average error of 0.1445 units.
 
