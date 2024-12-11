@@ -404,6 +404,19 @@ We applied **one-hot encoding** to the categorical features and used **Lasso reg
 - **RMSE**: 0.0886
 - **MBE**: -0.0022
 
+# Residual Plot
+Below is the residual plot:
+
+<iframe
+  src="assets/residuals.html"
+  width="750"
+  height="500"
+  frameborder="0"
+></iframe>
+
+The residual plot indicates that the model does not have much bias, as the residuals are scattered randomly around zero with no clear pattern.
+
+
 ### Model Interpretation
 
 - **R² Scores**: Both the **training** and **test** R² scores are very high (around 0.931), indicating that the model explains a significant proportion of the variance in the vision score predictions. This represents a **substantial improvement** over the baseline model.
